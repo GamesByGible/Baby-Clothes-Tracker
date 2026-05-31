@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby Wardrobe</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wardrobe">
+<meta name="theme-color" content="#2c2018">
+<link rel="apple-touch-icon" id="apple-touch-icon">
+<link id="pwa-manifest" rel="manifest">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f3ee;
+  --text: #2c2018;
+  --text-mid: #7a6555;
+  --text-light: #b09a88;
+  --border: #e8ddd4;
+  --shadow: 0 2px 12px rgba(44,32,24,0.07);
+  --shadow-md: 0 4px 24px rgba(44,32,24,0.11);
+
+  --summer: #fff4e0;
+  --summer-accent: #f5a623;
+  --summer-dark: #b87a10;
+  --summer-border: #fddfa0;
+
+  --winter: #e8f0fa;
+  --winter-accent: #4a7fc1;
+  --winter-dark: #2d5a96;
+  --winter-border: #b8d0f0;
+
+  --sleep: #ede8f8;
+  --sleep-accent: #7c5cbf;
+  --sleep-dark: #5438a0;
+  --sleep-border: #cfc0f0;
+
+  --essentials: #e8f5ee;
+  --essentials-accent: #38a06c;
+  --essentials-dark: #1f7a4d;
+  --essentials-border: #a8dfc0;
+
+  --bedding: #fdf0e8;
+  --bedding-accent: #d4845a;
+  --bedding-dark: #a05a30;
+  --bedding-border: #f0c8a8;
+
+  --feeding: #fce8f0;
+  --feeding-accent: #c85a8a;
+  --feeding-dark: #943060;
+  --feeding-border: #f0b0d0;
+
+  --alert-bg: #fff3e0;
+  --alert-border: #f5a623;
+  --alert-text: #7a4800;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* ── Header ── */
+header {
+  background: var(--text);
+  color: white;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.25rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.age-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50px;
+  padding: 4px 12px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.03em;
+}
+
+/* ── Alert ── */
+.size-alert {
+  background: var(--alert-bg);
+  border-bottom: 2px solid var(--alert-border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--alert-text);
+}
+.size-alert.hidden { display: none; }
+
+/* ── Main ── */
+main { max-width: 1000px; margin: 0 auto; padding: 24px 20px 80px; }
+
+/* ── Quick Add ── */
+.quick-add-bar {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+}
+.qa-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+.qa-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.sel-wrap { position: relative; display: flex; align-items: center; }
+.sel-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 10px;
+  color: var(--text-light);
+  pointer-events: none;
+  font-size: 0.75rem;
+}
+
+select, .qa-num {
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 9px 28px 9px 11px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.18s;
+}
+select:focus { border-color: var(--summer-accent); }
+select.error { border-color: #e05555 !important; }
+.qa-num { padding: 9px 11px; width: 60px; text-align: center; }
+
+.tog-wrap, .variant-wrap { display: none; }
+.tog-wrap.visible, .variant-wrap.visible { display: flex; }
+
+.qa-btn {
+  background: var(--text);
+  color: white;
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 9px 20px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.qa-btn:hover { opacity: 0.85; }
+.qa-btn:active { transform: scale(0.97); }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  width: fit-content;
+}
+.tab {
+  padding: 7px 18px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  border-radius: 7px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--text-mid);
+  font-family: 'Nunito', sans-serif;
+  transition: all 0.15s;
+}
+.tab.active { background: var(--text); color: white; }
+
+/* ── View ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Generic collapsible block (used for both sized and sizeless sections) ── */
+.coll-block {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.2s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.coll-block.collapsed .coll-body { display: none; }
+.coll-block.collapsed .coll-chevron { transform: rotate(-90deg); }
+.coll-block:not(.collapsed) .coll-header { border-bottom: 2px solid var(--border); }
+
+.coll-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.coll-header:hover { background: var(--bg); }
+
+.coll-icon { font-size: 1.1rem; flex-shrink: 0; }
+.coll-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.coll-meta { font-size: 0.75rem; font-weight: 700; color: var(--text-light); }
+.coll-count {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 12px;
+  border-radius: 50px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.coll-chevron {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.coll-body { padding: 0 18px 14px; }
+
+/* Size badge variant */
+.size-badge {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--text);
+  color: white;
+  border-radius: var(--radius-xs);
+  padding: 2px 12px 4px;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+.size-badge.current-sz { background: var(--summer-accent); }
+
+/* ── Season sub-blocks (inside size sections) ── */
+.season-block {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-top: 10px;
+}
+.season-block.collapsed .season-body { display: none; }
+.season-block.collapsed .season-chevron { transform: rotate(-90deg); }
+
+.season-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 2px solid transparent;
+}
+.season-header.summer { background: var(--summer); border-color: var(--summer-border); }
+.season-header.winter { background: var(--winter); border-color: var(--winter-border); }
+.season-header.sleep  { background: var(--sleep);  border-color: var(--sleep-border); }
+
+.season-name { font-family: 'Baloo 2', cursive; font-size: 0.82rem; font-weight: 700; }
+.season-name.summer { color: var(--summer-dark); }
+.season-name.winter { color: var(--winter-dark); }
+.season-name.sleep  { color: var(--sleep-dark); }
+
+.season-count { margin-left: auto; font-size: 0.72rem; font-weight: 800; padding: 2px 10px; border-radius: 50px; }
+.season-count.summer { background: var(--summer-border); color: var(--summer-dark); }
+.season-count.winter { background: var(--winter-border); color: var(--winter-dark); }
+.season-count.sleep  { background: var(--sleep-border);  color: var(--sleep-dark); }
+.season-chevron { font-size: 0.65rem; color: var(--text-light); transition: transform 0.2s; }
+
+.season-body { padding: 2px 14px 10px; }
+
+/* ── Item rows ── */
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.item-row:last-child { border-bottom: none; }
+.item-icon { font-size: 1rem; width: 22px; text-align: center; flex-shrink: 0; }
+.item-name { font-size: 0.875rem; font-weight: 700; flex: 1; }
+.item-sub  { font-size: 0.72rem; font-weight: 700; color: var(--text-light); }
+.item-tog {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--sleep-border);
+  color: var(--sleep-dark);
+  border-radius: 50px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.item-variant {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--feeding-border);
+  color: var(--feeding-dark);
+  border-radius: 50px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+.qty-control { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.qty-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--text-mid);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.13s;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1;
+}
+.qty-btn:hover { background: var(--border); color: var(--text); }
+.qty-btn.minus:hover { background: #ffe8e8; border-color: #e05555; color: #e05555; }
+.qty-num { font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; min-width: 22px; text-align: center; }
+
+/* ── Smart panel ── */
+.smart-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 600px) { .smart-panel { grid-template-columns: 1fr; } }
+
+.smart-card {
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.smart-card h3 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+.size-num {
+  font-family: 'Baloo 2', cursive;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.size-context { font-size: 0.8rem; font-weight: 700; color: var(--text-mid); line-height: 1.5; }
+.next-size-hint {
+  margin-top: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-light);
+  background: var(--bg);
+  border-radius: var(--radius-xs);
+  padding: 7px 10px;
+}
+.next-size-hint b { color: var(--alert-text); }
+
+.size-toggle {
+  display: flex; gap: 4px; margin-bottom: 14px;
+  background: var(--bg); border: 2px solid var(--border);
+  border-radius: var(--radius-xs); padding: 3px; width: fit-content;
+}
+.size-toggle-btn {
+  padding: 5px 14px; font-size: 0.78rem; font-weight: 800;
+  border-radius: 4px; cursor: pointer; border: none; background: none;
+  color: var(--text-mid); font-family: 'Nunito', sans-serif; transition: all 0.15s;
+}
+.size-toggle-btn.active { background: var(--text); color: white; }
+
+.reco-list { display: flex; flex-direction: column; }
+.reco-item {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 0.82rem; font-weight: 700; padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+.reco-item:last-child { border-bottom: none; }
+.reco-name { color: var(--text-mid); display: flex; align-items: center; gap: 6px; }
+.reco-counts { display: flex; align-items: center; gap: 6px; }
+.reco-have { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; }
+.reco-have.ok   { color: #38a06c; }
+.reco-have.warn { color: var(--summer-accent); }
+.reco-have.low  { color: #e05555; }
+.reco-target { font-size: 0.72rem; color: var(--text-light); }
+
+.section-empty { text-align: center; padding: 48px 20px; color: var(--text-light); }
+.section-empty .e-icon { font-size: 2.5rem; margin-bottom: 10px; }
+.section-empty p { font-weight: 700; font-size: 0.9rem; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.sync-bar { max-width:1000px; margin:0 auto; padding:8px 20px 0; display:flex; justify-content:flex-end; }
+.sync-badge { display:inline-flex; align-items:center; gap:5px; font-family:'Nunito',sans-serif; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.sync-badge.connecting { background:#FFF3CD; color:#856404; }
+.sync-badge.connected  { background:#D1FAE5; color:#065F46; }
+.sync-badge.error      { background:#FEE2E2; color:#991B1B; }
+.sync-dot { width:7px; height:7px; border-radius:50%; }
+.sync-badge.connecting .sync-dot { background:#FFC107; animation:pulse 1s infinite; }
+.sync-badge.connected  .sync-dot { background:#10B981; }
+.sync-badge.error      .sync-dot { background:#EF4444; }
+
+@media (max-width: 560px) {
+  .qa-row { gap: 6px; }
+  select { font-size: 0.82rem; }
+  .size-badge { font-size: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">👶 Baby Wardrobe</div>
+  <div class="age-badge" id="age-badge">—</div>
+</header>
+
+<div class="size-alert hidden" id="size-alert">
+  <span>⚠️</span>
+  <span id="alert-text"></span>
+</div>
+
+<div class="sync-bar">
+  <div class="sync-badge connecting" id="syncBadge">
+    <div class="sync-dot"></div>
+    <span id="syncText">Connecting…</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- Quick Add -->
+  <div class="quick-add-bar">
+    <div class="qa-label">✦ Quick Add</div>
+    <div class="qa-row">
+      <div class="sel-wrap">
+        <select id="qa-type" onchange="onTypeChange()">
+          <option value="">Type…</option>
+          <optgroup label="☀️ Summer">
+            <option>Onesie / Bodysuit (S/S)</option>
+            <option>T-Shirt</option>
+            <option>Shorts</option>
+            <option>Swimwear</option>
+            <option>Sun Hat</option>
+            <option>Singlet</option>
+          </optgroup>
+          <optgroup label="❄️ Winter">
+            <option>Onesie / Bodysuit (L/S)</option>
+            <option>Coveralls</option>
+            <option>Pants</option>
+            <option>Tracksuit Pants</option>
+            <option>Long-Sleeve Shirt</option>
+            <option>Jumper</option>
+            <option>Jacket / Coat</option>
+            <option>Beanie</option>
+            <option>Mittens</option>
+            <option>Socks</option>
+          </optgroup>
+          <optgroup label="🌙 Sleep">
+            <option>Sleep Suit</option>
+          </optgroup>
+          <optgroup label="🛏 Bedding">
+            <option>Cot Fitted Sheet</option>
+            <option>Cot Mattress Protector</option>
+            <option>Muslin Wrap</option>
+            <option>Blanket</option>
+          </optgroup>
+          <optgroup label="🟢 Essentials">
+            <option>Bottle Feeding Bib</option>
+            <option>Bandana Bib</option>
+            <option>Solids Bib / Smock</option>
+            <option>Burp Cloth</option>
+            <option>Bath Towel</option>
+            <option>Terry Towel</option>
+          </optgroup>
+          <optgroup label="🍼 Feeding">
+            <option>Bottle</option>
+            <option>Teat</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <!-- Size (sized clothing only) -->
+      <div class="sel-wrap" id="size-wrap">
+        <select id="qa-size">
+          <option value="">Size…</option>
+          <option>000</option>
+          <option>00</option>
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+        </select>
+      </div>
+
+      <!-- TOG (Sleep Suit only) -->
+      <div class="sel-wrap tog-wrap" id="tog-wrap">
+        <select id="qa-tog">
+          <option value="">TOG…</option>
+          <option>0.5</option>
+          <option>1.0</option>
+          <option>1.5</option>
+          <option>2.5</option>
+          <option>3.5</option>
+        </select>
+      </div>
+
+      <!-- Variant (Bottle or Teat) -->
+      <div class="sel-wrap variant-wrap" id="variant-wrap">
+        <select id="qa-variant">
+          <option value="">Size…</option>
+        </select>
+      </div>
+
+      <!-- Qty -->
+      <div style="display:flex;align-items:center;gap:0;border:2px solid var(--border);border-radius:var(--radius-xs);overflow:hidden;background:var(--bg)">
+        <button class="qty-btn" style="border-radius:0;border:none;background:none" onclick="changeAddQty(-1)">−</button>
+        <input class="qa-num" type="number" id="qa-qty" value="1" min="1" max="99">
+        <button class="qty-btn" style="border-radius:0;border:none;background:none" onclick="changeAddQty(1)">+</button>
+      </div>
+
+      <button class="qa-btn" onclick="addItem()">＋ Add</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showView('wardrobe', this)">Wardrobe</button>
+    <button class="tab" onclick="showView('smart', this)">Smart Guide</button>
+  </div>
+
+  <!-- Wardrobe View -->
+  <div class="view active" id="view-wardrobe">
+    <!-- Sized clothing -->
+    <div id="size-sections"></div>
+    <!-- Sizeless sections -->
+    <div id="sizeless-sections"></div>
+    <div id="wardrobe-empty" class="section-empty" style="display:none">
+      <div class="e-icon">🧺</div>
+      <p>Add some items to get started!</p>
+    </div>
+  </div>
+
+  <!-- Smart Guide View -->
+  <div class="view" id="view-smart">
+    <div class="smart-panel">
+      <div class="smart-card" id="size-card"></div>
+      <div class="smart-card" id="reco-card"></div>
+    </div>
+    <div class="smart-card" id="season-advice"></div>
+  </div>
+
+</main>
+
+<script type="module">
+// ─────────────────────────────────────────────
+// Config
+// ─────────────────────────────────────────────
+const BIRTH_DATE = new Date(2025, 11, 15);
+const STORAGE_KEY = 'babywardrobe-v3';
+
+const AU_SIZES = [
+  { label:'000', minAge:0,  maxAge:3,  desc:'0–3 months' },
+  { label:'00',  minAge:3,  maxAge:6,  desc:'3–6 months' },
+  { label:'0',   minAge:6,  maxAge:12, desc:'6–12 months' },
+  { label:'1',   minAge:12, maxAge:18, desc:'12–18 months' },
+  { label:'2',   minAge:18, maxAge:24, desc:'18–24 months' },
+  { label:'3',   minAge:24, maxAge:36, desc:'2–3 years' },
+  { label:'4',   minAge:36, maxAge:48, desc:'3–4 years' },
+  { label:'5',   minAge:48, maxAge:60, desc:'4–5 years' },
+  { label:'6',   minAge:60, maxAge:72, desc:'5–6 years' },
+  { label:'7',   minAge:72, maxAge:84, desc:'6–7 years' },
+  { label:'8',   minAge:84, maxAge:96, desc:'7–8 years' },
+];
+
+// category: sized clothing gets 'summer'|'winter'|'sleep'
+// sizeless items get their own section key
+const CATEGORY_MAP = {
+  // summer
+  'Onesie / Bodysuit (S/S)': 'summer',
+  'T-Shirt':                  'summer',
+  'Shorts':                   'summer',
+  'Swimwear':                 'summer',
+  'Sun Hat':                  'summer',
+  'Singlet':                  'summer',
+  // winter
+  'Onesie / Bodysuit (L/S)':  'winter',
+  'Coveralls':                'winter',
+  'Pants':                    'winter',
+  'Tracksuit Pants':          'winter',
+  'Long-Sleeve Shirt':        'winter',
+  'Jumper':                   'winter',
+  'Jacket / Coat':            'winter',
+  'Beanie':                   'winter',
+  'Mittens':                  'winter',
+  'Socks':                    'winter',
+  // sleep (sized)
+  'Sleep Suit':               'sleep',
+  // sizeless sections
+  'Cot Fitted Sheet':         'bedding',
+  'Cot Mattress Protector':   'bedding',
+  'Muslin Wrap':              'bedding',
+  'Blanket':                  'bedding',
+  'Bottle Feeding Bib':       'essentials',
+  'Bandana Bib':              'essentials',
+  'Solids Bib / Smock':       'essentials',
+  'Burp Cloth':               'essentials',
+  'Bath Towel':               'essentials',
+  'Terry Towel':              'essentials',
+  'Bottle':                   'feeding',
+  'Teat':                     'feeding',
+};
+
+const SIZELESS_CATS = ['bedding','essentials','feeding'];
+
+const SIZELESS_META = {
+  bedding:    { icon:'🛏',  label:'Bedding',              color:'--bedding',    countBg:'var(--bedding-border)',    countColor:'var(--bedding-dark)' },
+  essentials: { icon:'🟢', label:'Essentials & Utilities', color:'--essentials', countBg:'var(--essentials-border)', countColor:'var(--essentials-dark)' },
+  feeding:    { icon:'🍼',  label:'Feeding',               color:'--feeding',    countBg:'var(--feeding-border)',    countColor:'var(--feeding-dark)' },
+};
+
+const BOTTLE_SIZES = ['160ml','240ml'];
+const TEAT_SIZES   = ['SS','SS+','S','M','L','LL'];
+
+const TYPE_ICONS = {
+  'Onesie / Bodysuit (S/S)': '👕', 'T-Shirt':'👕', 'Shorts':'🩳',
+  'Swimwear':'🩱', 'Sun Hat':'🧢', 'Singlet':'👕',
+  'Onesie / Bodysuit (L/S)':'🧥', 'Coveralls':'🧸', 'Pants':'👖',
+  'Tracksuit Pants':'👖', 'Long-Sleeve Shirt':'👕', 'Jumper':'🧶',
+  'Jacket / Coat':'🧥', 'Beanie':'🎩', 'Mittens':'🧤', 'Socks':'🧦',
+  'Sleep Suit':'😴',
+  'Cot Fitted Sheet':'🛏', 'Cot Mattress Protector':'🛡️',
+  'Muslin Wrap':'🫶', 'Blanket':'🌸',
+  'Bottle Feeding Bib':'🍼', 'Bandana Bib':'🧣',
+  'Solids Bib / Smock':'🥄', 'Burp Cloth':'🤍',
+  'Bath Towel':'🛁', 'Terry Towel':'🧺',
+  'Bottle':'🍼', 'Teat':'💧',
+};
+
+function isSizeless(type) {
+  return SIZELESS_CATS.includes(CATEGORY_MAP[type]);
+}
+function getCategory(type) {
+  return CATEGORY_MAP[type] || 'summer';
+}
+
+// Sydney season by month (0-indexed)
+function sydneySeason(month) {
+  if ([10,11,0,1,2].includes(month)) return 'summer';
+  if ([3,9].includes(month)) return 'shoulder';
+  return 'winter';
+}
+
+// ─────────────────────────────────────────────
+// Firebase + Firestore
+// ─────────────────────────────────────────────
+import { initializeApp }                        from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyB3Fx7DcS7g0hc4ojVw-Dltp2wwd6AIL7w",
+  authDomain:        "baby-clothes-tracker-ef5f6.firebaseapp.com",
+  projectId:         "baby-clothes-tracker-ef5f6",
+  storageBucket:     "baby-clothes-tracker-ef5f6.firebasestorage.app",
+  messagingSenderId: "329466522832",
+  appId:             "1:329466522832:web:d7a0be8df537bc4cf7c2d5"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db    = getFirestore(fbApp);
+const DOC   = doc(db, 'wardrobe', 'items');
+
+// ─────────────────────────────────────────────
+// State
+// ─────────────────────────────────────────────
+let items  = [];
+let nextId = 1;
+let _saving = false; // debounce flag
+
+function applyData(d) {
+  items  = d.items  || [];
+  nextId = d.nextId || 1;
+  // Migration: strip TOG from non-Sleep Suit items
+  items.forEach(i => { if (i.tog && i.type !== 'Sleep Suit') i.tog = null; });
+}
+
+async function saveData() {
+  try {
+    await setDoc(DOC, { items, nextId });
+  } catch(e) {
+    console.error('Save failed:', e);
+    showSaveError();
+  }
+}
+
+function setSyncStatus(status, text) {
+  const badge = document.getElementById('syncBadge');
+  const label = document.getElementById('syncText');
+  badge.className = 'sync-badge ' + status;
+  label.textContent = text;
+}
+
+async function saveData() {
+  try {
+    setSyncStatus('connecting', 'Saving…');
+    await setDoc(DOC, { items, nextId });
+    setSyncStatus('connected', 'Synced ✓');
+  } catch(e) {
+    console.error('Save failed:', e);
+    setSyncStatus('error', 'Sync error');
+  }
+}
+
+// ─────────────────────────────────────────────
+// Age / Size helpers
+// ─────────────────────────────────────────────
+function getAgeMonths() {
+  return (Date.now() - BIRTH_DATE) / (1000*60*60*24*30.44);
+}
+function getCurrentSize() {
+  const age = getAgeMonths();
+  return AU_SIZES.find(s => age >= s.minAge && age < s.maxAge) || AU_SIZES[AU_SIZES.length-1];
+}
+function getNextSize() {
+  const idx = AU_SIZES.indexOf(getCurrentSize());
+  return idx < AU_SIZES.length-1 ? AU_SIZES[idx+1] : null;
+}
+
+function updateAgeBadge() {
+  const age = getAgeMonths();
+  const weeks = Math.floor(age * 4.345);
+  const label = age < 1 ? `${weeks}w old`
+    : age < 24 ? `${Math.floor(age)}m old`
+    : `${Math.floor(age/12)}y ${Math.floor(age%12)}m old`;
+  document.getElementById('age-badge').textContent = label;
+}
+
+function updateSizeAlert() {
+  const age = getAgeMonths();
+  const next = getNextSize();
+  const el = document.getElementById('size-alert');
+  if (!next) { el.classList.add('hidden'); return; }
+  const weeks = (next.minAge - age) * 4.345;
+  if (weeks <= 3) {
+    document.getElementById('alert-text').innerHTML = `<b>Time to size up!</b> He's likely ready for size <b>${next.label}</b> — start stocking up on ${next.desc} clothing.`;
+    el.classList.remove('hidden');
+  } else if (weeks <= 6) {
+    document.getElementById('alert-text').innerHTML = `<b>Coming up:</b> Size <b>${next.label}</b> in about ${Math.round(weeks)} weeks. Good time to start shopping!`;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+// ─────────────────────────────────────────────
+// Quick Add UI logic
+// ─────────────────────────────────────────────
+function onTypeChange() {
+  const type = document.getElementById('qa-type').value;
+  const sizeless = isSizeless(type);
+
+  document.getElementById('size-wrap').style.display = sizeless ? 'none' : '';
+
+  const togWrap = document.getElementById('tog-wrap');
+  const togSel  = document.getElementById('qa-tog');
+  if (type === 'Sleep Suit') {
+    togWrap.classList.add('visible');
+  } else {
+    togWrap.classList.remove('visible');
+    togSel.value = ''; // always clear when not applicable
+  }
+
+  const varWrap = document.getElementById('variant-wrap');
+  const varSel  = document.getElementById('qa-variant');
+  if (type === 'Bottle' || type === 'Teat') {
+    varWrap.classList.add('visible');
+    const opts = type === 'Bottle' ? BOTTLE_SIZES : TEAT_SIZES;
+    varSel.innerHTML = `<option value="">Size…</option>` + opts.map(o=>`<option>${o}</option>`).join('');
+  } else {
+    varWrap.classList.remove('visible');
+    varSel.value = '';
+  }
+}
+
+function changeAddQty(d) {
+  const inp = document.getElementById('qa-qty');
+  inp.value = Math.max(1, Math.min(99, parseInt(inp.value||1) + d));
+}
+
+function addItem() {
+  const type    = document.getElementById('qa-type').value;
+  const sizeEl  = document.getElementById('qa-size');
+  const size    = isSizeless(type) ? 'one-size' : sizeEl.value;
+  const tog     = (type === 'Sleep Suit') ? (document.getElementById('qa-tog').value || null) : null;
+  const variant = document.getElementById('qa-variant').value || null;
+  const qty     = parseInt(document.getElementById('qa-qty').value) || 1;
+
+  // Validate
+  let ok = true;
+  document.getElementById('qa-type').classList.remove('error');
+  sizeEl.classList.remove('error');
+  if (!type) { document.getElementById('qa-type').classList.add('error'); ok = false; }
+  if (!isSizeless(type) && !size) { sizeEl.classList.add('error'); ok = false; }
+  if (!ok) { setTimeout(() => document.querySelectorAll('.error').forEach(e=>e.classList.remove('error')), 1400); return; }
+
+  const existing = items.find(i => i.type===type && i.size===size && i.tog===tog && i.variant===variant);
+  if (existing) { existing.qty += qty; }
+  else { items.push({ id: nextId++, type, size, tog, variant, qty }); }
+
+  saveData();
+  render();
+  document.getElementById('qa-qty').value = 1;
+}
+
+function changeQty(id, delta) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) items = items.filter(i => i.id !== id);
+  saveData();
+  render();
+}
+
+// ─────────────────────────────────────────────
+// Views
+// ─────────────────────────────────────────────
+function showView(name, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'smart') renderSmart();
+}
+
+// Preserve collapsed state across re-renders
+function getCollapsed(id) {
+  return sessionStorage.getItem('collapsed_' + id) === '1';
+}
+function setCollapsed(id, val) {
+  sessionStorage.setItem('collapsed_' + id, val ? '1' : '0');
+}
+
+function toggleColl(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const nowCollapsed = !el.classList.contains('collapsed');
+  el.classList.toggle('collapsed', nowCollapsed);
+  setCollapsed(id, nowCollapsed);
+}
+
+// ─────────────────────────────────────────────
+// Render
+// ─────────────────────────────────────────────
+function render() {
+  updateAgeBadge();
+  updateSizeAlert();
+  renderWardrobe();
+  if (document.getElementById('view-smart').classList.contains('active')) renderSmart();
+}
+
+function renderWardrobe() {
+  renderSizeSections();
+  renderSizelessSections();
+
+  const hasAny = items.length > 0;
+  document.getElementById('wardrobe-empty').style.display = hasAny ? 'none' : 'block';
+}
+
+// ── Sized clothing ──
+function renderSizeSections() {
+  const el = document.getElementById('size-sections');
+  const sizedItems = items.filter(i => i.size !== 'one-size');
+
+  if (sizedItems.length === 0) { el.innerHTML = ''; return; }
+
+  const sizeOrder = AU_SIZES.map(s => s.label);
+  const curSize   = getCurrentSize().label;
+  const usedSizes = [...new Set(sizedItems.map(i => i.size))]
+    .sort((a,b) => sizeOrder.indexOf(a) - sizeOrder.indexOf(b));
+
+  el.innerHTML = usedSizes.map(size => {
+    const info      = AU_SIZES.find(s => s.label === size);
+    const isCurrent = size === curSize;
+    const sizeItems = sizedItems.filter(i => i.size === size);
+    const total     = sizeItems.reduce((a,i) => a+i.qty, 0);
+    const blockId   = 'sz-' + size;
+
+    // Default: current size open, others collapsed
+    const wasSet = sessionStorage.getItem('collapsed_' + blockId) !== null;
+    const collapsed = wasSet ? getCollapsed(blockId) : !isCurrent;
+    if (!wasSet) setCollapsed(blockId, collapsed);
+
+    const summerItems = sizeItems.filter(i => getCategory(i.type) === 'summer');
+    const winterItems = sizeItems.filter(i => getCategory(i.type) === 'winter');
+    const sleepItems  = sizeItems.filter(i => getCategory(i.type) === 'sleep');
+
+    return `
+      <div class="coll-block ${collapsed ? 'collapsed' : ''}" id="${blockId}">
+        <div class="coll-header" onclick="toggleColl('${blockId}')">
+          <div class="size-badge ${isCurrent ? 'current-sz' : ''}">${size}</div>
+          <div>
+            <div class="coll-title" style="font-size:0.82rem">${info ? info.desc : ''}${isCurrent ? ' · current' : ''}</div>
+          </div>
+          <div class="coll-count" style="background:var(--bg);border:2px solid var(--border);color:var(--text-light)">${total} items</div>
+          <span class="coll-chevron">▾</span>
+        </div>
+        <div class="coll-body" style="padding:8px 18px 14px">
+          ${seasonBlockHTML('summer','☀️','Summer', summerItems)}
+          ${seasonBlockHTML('winter','❄️','Winter', winterItems)}
+          ${seasonBlockHTML('sleep', '🌙','Sleep',  sleepItems)}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function seasonBlockHTML(cat, icon, label, catItems) {
+  if (catItems.length === 0) return '';
+  const total  = catItems.reduce((a,i) => a+i.qty, 0);
+  const blockId = 'season-' + cat + '-' + catItems[0].size;
+  const rows   = catItems.map(item => itemRowHTML(item)).join('');
+  const collapsed = getCollapsed(blockId) ? 'collapsed' : '';
+  return `
+    <div class="season-block ${collapsed}" id="${blockId}">
+      <div class="season-header ${cat}" onclick="toggleColl('${blockId}')">
+        <span style="font-size:1rem">${icon}</span>
+        <span class="season-name ${cat}">${label}</span>
+        <span class="season-count ${cat}">${total} items</span>
+        <span class="season-chevron">▾</span>
+      </div>
+      <div class="season-body" onclick="event.stopPropagation()">
+        ${rows}
+      </div>
+    </div>`;
+}
+
+// ── Sizeless sections ──
+function renderSizelessSections() {
+  const el = document.getElementById('sizeless-sections');
+  const sizelessItems = items.filter(i => i.size === 'one-size');
+
+  if (sizelessItems.length === 0) { el.innerHTML = ''; return; }
+
+  el.innerHTML = Object.entries(SIZELESS_META).map(([cat, meta]) => {
+    const catItems = sizelessItems.filter(i => CATEGORY_MAP[i.type] === cat);
+    if (catItems.length === 0) return '';
+
+    const total   = catItems.reduce((a,i) => a+i.qty, 0);
+    const blockId = 'sl-' + cat;
+    const wasSet  = sessionStorage.getItem('collapsed_' + blockId) !== null;
+    const collapsed = wasSet ? getCollapsed(blockId) : false;
+    if (!wasSet) setCollapsed(blockId, collapsed);
+
+    const rows = catItems.map(item => itemRowHTML(item)).join('');
+
+    return `
+      <div class="coll-block ${collapsed ? 'collapsed' : ''}" id="${blockId}" style="border-color:var(${meta.color}-border)">
+        <div class="coll-header" onclick="toggleColl('${blockId}')" style="background:var(${meta.color})">
+          <span class="coll-icon">${meta.icon}</span>
+          <span class="coll-title" style="color:var(${meta.color}-dark)">${meta.label}</span>
+          <span class="coll-count" style="background:${meta.countBg};color:${meta.countColor}">${total} items</span>
+          <span class="coll-chevron">▾</span>
+        </div>
+        <div class="coll-body">${rows}</div>
+      </div>`;
+  }).join('');
+}
+
+function itemRowHTML(item) {
+  const icon = TYPE_ICONS[item.type] || '✨';
+  const togBadge     = item.tog     ? `<span class="item-tog">${item.tog} TOG</span>` : '';
+  const variantBadge = item.variant ? `<span class="item-variant">${item.variant}</span>` : '';
+  return `
+    <div class="item-row">
+      <span class="item-icon">${icon}</span>
+      <span class="item-name">${item.type}</span>
+      ${togBadge}${variantBadge}
+      <div class="qty-control">
+        <button class="qty-btn minus" onclick="changeQty(${item.id},-1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// Smart Guide
+// ─────────────────────────────────────────────
+let recoSizeMode = 'current';
+
+function setRecoSize(mode, btn) {
+  recoSizeMode = mode;
+  document.querySelectorAll('.size-toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRecoCard();
+}
+
+function renderSmart() {
+  renderSizeCard();
+  renderRecoCard();
+  renderSeasonAdvice();
+}
+
+function renderSizeCard() {
+  const age  = getAgeMonths();
+  const cur  = getCurrentSize();
+  const next = getNextSize();
+  const weeksLeft = next ? Math.round((next.minAge - age) * 4.345) : null;
+  const ageLabel  = age < 1 ? `${Math.floor(age*4.345)} weeks old` : `${Math.floor(age)} months old`;
+
+  const hint = next
+    ? `<div class="next-size-hint">Next: <b>Size ${next.label}</b> (~${weeksLeft} week${weeksLeft!==1?'s':''} · ${next.desc})</div>`
+    : `<div class="next-size-hint">You've got a big kid! 🎉</div>`;
+
+  document.getElementById('size-card').innerHTML = `
+    <h3>Current Size</h3>
+    <div style="display:flex;align-items:baseline;gap:8px">
+      <div class="size-num">${cur.label}</div>
+      <div class="size-context">${cur.desc}<br><span style="color:var(--text-light)">${ageLabel}</span></div>
+    </div>
+    ${hint}`;
+}
+
+function getRecommendations(ageMonths, season) {
+  const tiny = ageMonths < 6;
+  const baby = ageMonths < 12;
+  return [
+    ['Onesie / Bodysuit (S/S)', season==='winter'?3:6, '👕'],
+    ['Onesie / Bodysuit (L/S)', season==='summer'?3:6, '🧥'],
+    ['Pants / Tracksuit Pants', season==='summer'?2:4, '👖'],
+    ['Sleep Suit',              tiny?5:4,               '😴'],
+    ['Bottle Feeding Bib',      baby?8:5,               '🍼'],
+    ['Burp Cloth',              baby?8:4,               '🤍'],
+    ['Muslin Wrap',             4,                      '🫶'],
+    ['Jacket / Coat',           season==='summer'?1:2,  '🧥'],
+  ];
+}
+
+function renderRecoCard() {
+  const age    = getAgeMonths();
+  const season = sydneySeason(new Date().getMonth());
+  const cur    = getCurrentSize();
+  const next   = getNextSize();
+  const showNext  = recoSizeMode === 'next' && next;
+  const target    = showNext ? next : cur;
+  const projAge   = showNext ? (next.minAge + next.maxAge)/2 : age;
+  const recos     = getRecommendations(projAge, season);
+
+  function countFor(name, sizeLabel) {
+    return items
+      .filter(i => i.size === sizeLabel || i.size === 'one-size')
+      .filter(i => {
+        if (name === 'Pants / Tracksuit Pants') return i.type==='Pants' || i.type==='Tracksuit Pants';
+        if (name === 'Bottle Feeding Bib') return i.type==='Bottle Feeding Bib' || i.type==='Bandana Bib';
+        return i.type === name;
+      })
+      .reduce((a,i) => a+i.qty, 0);
+  }
+
+  const rows = recos.map(([name, tgt, icon]) => {
+    const have = countFor(name, target.label);
+    const cls  = have>=tgt ? 'ok' : have>=tgt*0.6 ? 'warn' : 'low';
+    const lbl  = have>=tgt ? '✓ Good' : have>=tgt*0.6 ? 'Getting there' : 'Stock up';
+    return `
+      <div class="reco-item">
+        <span class="reco-name">${icon} ${name}</span>
+        <div class="reco-counts">
+          <span class="reco-have ${cls}">${have}/${tgt}</span>
+          <span class="reco-target">${lbl}</span>
+        </div>
+      </div>`;
+  }).join('');
+
+  const nextDis   = !next ? 'style="opacity:0.4;pointer-events:none"' : '';
+  const nextLabel = next ? `Next (${next.label})` : 'Next';
+
+  document.getElementById('reco-card').innerHTML = `
+    <h3>Recommended · ${season[0].toUpperCase()+season.slice(1)}</h3>
+    <div class="size-toggle">
+      <button class="size-toggle-btn ${recoSizeMode==='current'?'active':''}" onclick="setRecoSize('current',this)">Current (${cur.label})</button>
+      <button class="size-toggle-btn ${recoSizeMode==='next'?'active':''}" onclick="setRecoSize('next',this)" ${nextDis}>${nextLabel}</button>
+    </div>
+    <div class="reco-list">${rows}</div>`;
+}
+
+function renderSeasonAdvice() {
+  const age    = getAgeMonths();
+  const season = sydneySeason(new Date().getMonth());
+
+  const advice = {
+    summer: {
+      icon:'☀️', title:'Sydney Summer Tips',
+      bg:'var(--summer)', border:'var(--summer-border)',
+      tips:[
+        'Prioritise light, breathable fabrics — muslin and cotton are best.',
+        'Onesies and singlets are the daily staple.',
+        'Sun hats are essential for any time outdoors.',
+        age<6 ? 'Keep him out of direct sun entirely at this age — shade only.' : 'Apply SPF 50+ on exposed skin for any outings.',
+        'For sleep: a 0.5 TOG sleep suit is ideal if the room is above 24°C.',
+      ]
+    },
+    winter: {
+      icon:'❄️', title:'Sydney Winter Tips',
+      bg:'var(--winter)', border:'var(--winter-border)',
+      tips:[
+        'Sydney winters are mild — layering is more effective than heavy single pieces.',
+        'A long-sleeve bodysuit under coveralls or a jumper covers most days.',
+        'For sleep: a 2.5 TOG sleep suit works well for Sydney winter nights.',
+        'Socks and a beanie add meaningful warmth without bulk.',
+        age<6 ? 'Newborns run warm — avoid over-bundling.' : 'Dress him in one more layer than you\'re wearing.',
+      ]
+    },
+    shoulder: {
+      icon:'🌤️', title:'Shoulder Season Tips',
+      bg:'var(--essentials)', border:'var(--essentials-border)',
+      tips:[
+        'Keep a mix of summer and winter pieces accessible — mornings are cool, afternoons warm.',
+        'Light jumpers and cardigans are perfect for layering.',
+        'For sleep: a 1.0–1.5 TOG sleep suit suits this in-between period.',
+        'Good time to sort through the current size before the next season hits.',
+      ]
+    }
+  };
+
+  const a    = advice[season];
+  const tips = a.tips.map(t => `
+    <div class="reco-item">
+      <span style="color:var(--text-light);margin-right:8px;flex-shrink:0">→</span>
+      <span>${t}</span>
+    </div>`).join('');
+
+  document.getElementById('season-advice').innerHTML = `
+    <h3>${a.icon} ${a.title}</h3>
+    <div class="reco-list" style="margin-top:6px">${tips}</div>`;
+}
+
+// ─────────────────────────────────────────────
+// Expose functions to global scope (required for inline onclick with type=module)
+// ─────────────────────────────────────────────
+Object.assign(window, {
+  onTypeChange, changeAddQty, addItem, changeQty,
+  showView, toggleColl, setRecoSize, setSyncStatus,
+});
+
+// ─────────────────────────────────────────────
+// PWA Icon + Manifest (inline, no extra files needed)
+// ─────────────────────────────────────────────
+(function setupPWA() {
+  // Draw a onesie icon onto a canvas and use it for both
+  // the apple-touch-icon and the PWA manifest icon.
+  const size = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const s = size;
+
+  // Background — warm dark brown, rounded
+  const r = s * 0.18;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(s-r, 0);
+  ctx.quadraticCurveTo(s, 0, s, r);
+  ctx.lineTo(s, s-r);
+  ctx.quadraticCurveTo(s, s, s-r, s);
+  ctx.lineTo(r, s);
+  ctx.quadraticCurveTo(0, s, 0, s-r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fillStyle = '#2c2018';
+  ctx.fill();
+
+  // ── Draw onesie shape ──
+  // Onesie is drawn in a warm cream/peach colour
+  // Coordinates as fractions of canvas size for scalability
+  const c = '#fdf0e2'; // cream fill
+  const stroke = '#e8c89a';
+
+  ctx.save();
+  ctx.translate(s * 0.5, s * 0.5);
+  const sc = s * 0.78;
+
+  // All coords are in a -0.5..0.5 space, scaled by sc
+  function px(x) { return x * sc; }
+
+  ctx.beginPath();
+
+  // Onesie path (top-down):
+  // Left shoulder tab
+  ctx.moveTo(px(-0.50), px(-0.35));       // far left shoulder
+  ctx.lineTo(px(-0.50), px(-0.12));       // down left arm
+  ctx.lineTo(px(-0.28), px(-0.02));       // in to left armpit
+  // Left body side
+  ctx.lineTo(px(-0.28), px(0.28));        // down left torso
+  // Crotch snap area — shallow arch
+  ctx.quadraticCurveTo(px(-0.14), px(0.40), px(0), px(0.40));
+  ctx.quadraticCurveTo(px(0.14),  px(0.40), px(0.28), px(0.28));
+  // Right body side
+  ctx.lineTo(px(0.28), px(-0.02));        // up right torso
+  // Right armpit
+  ctx.lineTo(px(0.50), px(-0.12));        // out to right arm bottom
+  ctx.lineTo(px(0.50), px(-0.35));        // up right shoulder
+  // Right shoulder curve in to neck
+  ctx.quadraticCurveTo(px(0.50), px(-0.50), px(0.20), px(-0.50));
+  // Neck right
+  ctx.lineTo(px(0.20), px(-0.35));
+  // Neck curve (round neckline)
+  ctx.quadraticCurveTo(px(0.10), px(-0.28), px(0), px(-0.28));
+  ctx.quadraticCurveTo(px(-0.10), px(-0.28), px(-0.20), px(-0.35));
+  // Neck left
+  ctx.lineTo(px(-0.20), px(-0.50));
+  // Left shoulder curve back out
+  ctx.quadraticCurveTo(px(-0.50), px(-0.50), px(-0.50), px(-0.35));
+  ctx.closePath();
+
+  ctx.fillStyle = c;
+  ctx.fill();
+  ctx.strokeStyle = stroke;
+  ctx.lineWidth = s * 0.018;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Snap buttons at crotch — three small circles
+  const snapY = px(0.345);
+  const snapR = s * 0.022;
+  [-0.10, 0, 0.10].forEach(bx => {
+    ctx.beginPath();
+    ctx.arc(px(bx), snapY, snapR, 0, Math.PI*2);
+    ctx.fillStyle = stroke;
+    ctx.fill();
+  });
+
+  ctx.restore();
+
+  const dataURL = canvas.toDataURL('image/png');
+
+  // Apply as apple-touch-icon
+  document.getElementById('apple-touch-icon').href = dataURL;
+
+  // Build and inject manifest
+  const icons = [
+    { src: dataURL, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+  ];
+  const manifest = {
+    name: 'Baby Wardrobe',
+    short_name: 'Wardrobe',
+    start_url: '.',
+    display: 'standalone',
+    background_color: '#2c2018',
+    theme_color: '#2c2018',
+    icons
+  };
+  const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+  document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+})();
+// ─────────────────────────────────────────────
+// Init — real-time Firestore listener
+// ─────────────────────────────────────────────
+onTypeChange();
+
+onSnapshot(DOC, (snap) => {
+  if (snap.exists()) {
+    applyData(snap.data());
+  } else {
+    items = []; nextId = 1;
+  }
+  setSyncStatus('connected', 'Synced ✓');
+  render();
+}, (err) => {
+  console.error('Firestore error:', err);
+  setSyncStatus('error', 'Sync error');
+});
+</script>
+</body>
+</html>
